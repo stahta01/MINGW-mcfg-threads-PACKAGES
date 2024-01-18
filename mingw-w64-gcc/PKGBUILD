@@ -15,6 +15,7 @@
 options=('!emptydirs') # '!strip' 'debug')
 _BUGURL='https://github.com/stahta01/MINGW-mcfg-threads-PACKAGES/issues'
 _BUILTBY="stahta01"
+_NO_CLONE_MODE=yes
 ### Language build options
 _enable_ada=yes
 _enable_d=no
@@ -67,6 +68,11 @@ makedepends=('git'
              "${MINGW_PACKAGE_PREFIX}-autotools"
              "${MINGW_PACKAGE_PREFIX}-mcfgthread")
 options=('!emptydirs') # '!strip' 'debug')
+if [ "$_NO_CLONE_MODE" == "yes" ]; then
+  noextract=(${_sourcedir})
+else
+  noextract=()
+fi
 source=(${_sourcedir}::"git://gcc.gnu.org/git/gcc.git#branch=${_branch}"
         "gdbinit"
         0002-Relocate-libintl.patch
@@ -152,6 +158,28 @@ pkgver() {
 }
 
 prepare() {
+if [ "$_NO_CLONE_MODE" == "yes" ]; then
+  cd ${srcdir}/..
+  if [ -d ${_sourcedir} ]; then
+    msg "parent clone already exists"
+  else
+    msg "missing parent clone aborting"
+    exit
+  fi
+
+  cd ${srcdir}
+  if [ -d ${_sourcedir} ]; then
+    msg "src clone already exists"
+  else
+    msg "missing src clone aborting"
+    exit
+# Trying to figure out the right command to do src clone
+# git clone --shared --reference ../${_sourcedir} \
+# -- git://gcc.gnu.org/git/gcc.git#branch=${_branch} ${_sourcedir}
+# git repack --local
+  fi
+fi
+
   cd ${srcdir}/${_sourcedir}
 
   #git config user.email "nobody@example.com"
