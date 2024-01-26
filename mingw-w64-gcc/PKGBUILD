@@ -17,6 +17,7 @@ pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}"
          "${MINGW_PACKAGE_PREFIX}-${_realname}-libgfortran"
          "${MINGW_PACKAGE_PREFIX}-${_realname}-fortran"
          $([[ "$_enable_ada" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-${_realname}-ada")
+         $([[ "$_enable_d" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-${_realname}-d")
          $([[ "$_enable_objc" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-${_realname}-objc")
          $([[ "$_enable_rust" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-${_realname}-rust")
          $([[ "$_enable_jit" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-libgccjit")
@@ -34,6 +35,7 @@ groups=("${MINGW_PACKAGE_PREFIX}-toolchain")
 makedepends=('git'
              "${MINGW_PACKAGE_PREFIX}-${_realname}"
              $([[ "$_enable_ada" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-${_realname}-ada")
+             $([[ "$_enable_d" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-${_realname}-d")
              "${MINGW_PACKAGE_PREFIX}-binutils"
              "${MINGW_PACKAGE_PREFIX}-crt"
              "${MINGW_PACKAGE_PREFIX}-headers"
@@ -239,6 +241,10 @@ build() {
   local _languages="c,lto,c++,fortran"
   if [ "$_enable_ada" == "yes" ]; then
     _languages+=",ada"
+  fi
+  if [ "$_enable_d" == "yes" ]; then
+    _languages+=",d"
+    extra_config+=('--enable-libphobos')
   fi
   if [ "$_enable_objc" == "yes" ]; then
     _languages+=",objc,obj-c++"
@@ -523,6 +529,25 @@ package_gcc-ada() {
   cp share/info/gnat-style.info*                        ${pkgdir}${MINGW_PREFIX}/share/info/
   cp share/info/gnat_rm.info*                           ${pkgdir}${MINGW_PREFIX}/share/info/
   cp share/info/gnat_ugn.info*                          ${pkgdir}${MINGW_PREFIX}/share/info/
+}
+
+package_gcc-d() {
+  pkgdesc="GNU Compiler Collection (D Frontend) for MinGW-w64"
+  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}-git=${pkgver}-${pkgrel}")
+
+  cd ${srcdir}${MINGW_PREFIX}
+
+  mkdir -p ${pkgdir}${MINGW_PREFIX}/bin
+  cp bin/gdc.exe                                              ${pkgdir}${MINGW_PREFIX}/bin/
+
+  mkdir -p ${pkgdir}${MINGW_PREFIX}/lib/gcc/${MINGW_CHOST}/${pkgver%%+*}/include/d
+  cp lib/{libgphobos*,libgdruntime*}.a                        ${pkgdir}${MINGW_PREFIX}/lib/
+  cp lib/libgphobos.spec                                      ${pkgdir}${MINGW_PREFIX}/lib/
+  if [[ "$MSYSTEM" == "MINGW32" ]]; then
+    cp lib/drt*.o                                             ${pkgdir}${MINGW_PREFIX}/lib/
+  fi
+  cp lib/gcc/${MINGW_CHOST}/${pkgver%%+*}/d21.exe             ${pkgdir}${MINGW_PREFIX}/lib/gcc/${MINGW_CHOST}/${pkgver%%+*}/
+  cp -r lib/gcc/${MINGW_CHOST}/${pkgver%%+*}/include/d        ${pkgdir}${MINGW_PREFIX}/lib/gcc/${MINGW_CHOST}/${pkgver%%+*}/include/
 }
 
 package_gcc-objc() {
