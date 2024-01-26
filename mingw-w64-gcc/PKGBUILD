@@ -21,6 +21,7 @@ _enable_rust=no
 _enable_jit=no
 ### build options not normally changed
 _threads="mcf"
+_enable_libgomp=no
 
 _realname=gcc
 pkgbase=mingw-w64-${_realname}
@@ -235,6 +236,10 @@ build() {
   else
     extra_config+=("--enable-libstdcxx-debug")
   fi
+  #
+  if [ "$_enable_libgomp" != "yes" ]; then
+    extra_config+=("--disable-libgomp")
+  fi
 
   case "${CARCH}" in
     i686)
@@ -309,7 +314,6 @@ build() {
     --enable-libstdcxx-time \
     --disable-libstdcxx-pch \
     --enable-lto \
-    --enable-libgomp \
     --disable-libssp \
     --disable-multilib \
     --disable-rpath \
@@ -376,9 +380,12 @@ ENDFILE
 
   cd ${srcdir}${MINGW_PREFIX}
   # libitm* and libvtv* are disbled until fixed
-  cp bin/{libatomic*,libgcc*,libgomp*,libquadmath*,libstdc*}.dll ${pkgdir}${MINGW_PREFIX}/bin/
+  cp bin/{libatomic*,libgcc*,libquadmath*,libstdc*}.dll ${pkgdir}${MINGW_PREFIX}/bin/
   if [ "$_enable_jit" == "yes" ]; then
     rm ${pkgdir}${MINGW_PREFIX}/bin/libgccjit-0.dll
+  fi
+  if [[ "$_enable_libgomp" == "yes" ]]; then
+    cp bin/libgomp*.dll ${pkgdir}${MINGW_PREFIX}/bin/
   fi
 }
 
@@ -442,7 +449,9 @@ package_gcc() {
   cp lib/libgcc_*                                         ${pkgdir}${MINGW_PREFIX}/lib/
   cp lib/gcc/${MINGW_CHOST}/${pkgver%%+*}/libgcc*            ${pkgdir}${MINGW_PREFIX}/lib/gcc/${MINGW_CHOST}/${pkgver%%+*}/
 
-  cp lib/libgomp*                                        ${pkgdir}${MINGW_PREFIX}/lib/
+  if [[ "$_enable_libgomp" == "yes" ]]; then
+    cp lib/libgomp*                                      ${pkgdir}${MINGW_PREFIX}/lib/
+  fi
   # cp lib/libitm*                                         ${pkgdir}${MINGW_PREFIX}/lib/
   cp lib/libquadmath*                                    ${pkgdir}${MINGW_PREFIX}/lib/
   # cp lib/libvtv*                                         ${pkgdir}${MINGW_PREFIX}/lib/
@@ -466,7 +475,9 @@ package_gcc() {
   cp share/info/gccinstall.info*                         ${pkgdir}${MINGW_PREFIX}/share/info/
   cp share/info/gccint.info*                             ${pkgdir}${MINGW_PREFIX}/share/info/
   # cp share/info/libitm.info*                             ${pkgdir}${MINGW_PREFIX}/share/info/
-  cp share/info/libgomp.info*                            ${pkgdir}${MINGW_PREFIX}/share/info/
+  if [[ "$_enable_libgomp" == "yes" ]]; then
+    cp share/info/libgomp.info*                          ${pkgdir}${MINGW_PREFIX}/share/info/
+  fi
   cp share/info/libquadmath.info*                        ${pkgdir}${MINGW_PREFIX}/share/info/
 
   #cp share/locale/* ${pkgdir}${MINGW_PREFIX}/share/locale/
