@@ -1,0 +1,23 @@
+From 5711def09f09196ee45eb59ed5e200daf6567793 Mon Sep 17 00:00:00 2001
+From: Tim Stahlhut <stahta01@gmail.com>
+Date: Fri, 26 Jan 2024 23:01:48 -0500
+Subject: libphobos: Use single thread when mcf threads
+
+---
+ libphobos/m4/druntime/os.m4 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libphobos/m4/druntime/os.m4 b/libphobos/m4/druntime/os.m4
+index 15cde3b04b8..1061fd1f184 100644
+--- a/libphobos/m4/druntime/os.m4
++++ b/libphobos/m4/druntime/os.m4
+@@ -30,7 +30,7 @@ case $1 in
+     single) DCFG_THREAD_MODEL="Single" ;;
+     win32)  DCFG_THREAD_MODEL="Win32" ;;
+     # TODO: These targets need porting.
+-    dce|mipssde|rtems|tpf|vxworks)
++    dce|mcf|mipssde|rtems|tpf|vxworks)
+ 	    DCFG_THREAD_MODEL="Single" ;;
+     *)	    as_fn_error "Thread implementation '$1' not recognised" "$LINENO" 5 ;;
+ esac
+-- 
