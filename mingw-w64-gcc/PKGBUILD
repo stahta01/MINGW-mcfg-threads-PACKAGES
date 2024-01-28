@@ -1,10 +1,21 @@
-# Maintainer:  Alexey Pavlov <alexpux@gmail.com>
-# Contributor: Alexey Borzenkov <snaury@gmail.com>
-# Contributor: Ray Donnelly <mingw.android@gmail.com>
-# Contributor: Renato Silva <br.renatosilva@gmail.com>
-# Contributor: wirx6 <wirx654@gmail.com>
-# Contributor: Kirill Müller <krlmlr@mailbox.org>
+####
+# Based partly on https://github.com/lhmouse/MINGW-packages/tree/master/mingw-w64-gcc,
+# https://github.com/msys2/MINGW-packages/tree/master/mingw-w64-gcc, and
+# https://github.com/stahta01/gcc-MINGW-packages_with_D_language/tree/main/mingw-w64-gcc11-git
+####
+# Maintainer:  Tim Stahlhut
+# Contributor: Alexey Pavlov
+# Contributor: Alexey Borzenkov
+# Contributor: Ray Donnelly
+# Contributor: Renato Silva
+# Contributor: wirx6
+# Contributor: Kirill Müller
 
+### Major build options
+options=('!emptydirs') # '!strip' 'debug')
+_BUGURL='https://github.com/stahta01/MINGW-mcfg-threads-PACKAGES/issues'
+_BUILTBY="stahta01"
+### Language build options
 _enable_ada=yes
 _enable_objc=no
 _enable_rust=no
@@ -49,7 +60,6 @@ makedepends=('git'
              "${MINGW_PACKAGE_PREFIX}-zstd"
              "${MINGW_PACKAGE_PREFIX}-gperf"
              "${MINGW_PACKAGE_PREFIX}-autotools")
-options=('!emptydirs') # '!strip' 'debug')
 source=(${_sourcedir}::"git://gcc.gnu.org/git/gcc.git#branch=${_branch}"
         "gdbinit"
         0002-Relocate-libintl.patch
@@ -302,8 +312,8 @@ build() {
     --with-libiconv \
     --with-system-zlib \
     --with-{gmp,mpfr,mpc,isl}=${MINGW_PREFIX} \
-    --with-pkgversion="Rev${pkgrel}, Built by MSYS2 project" \
-    --with-bugurl="https://github.com/msys2/MINGW-packages/issues" \
+    --with-pkgversion="GCC without threads for ${MSYSTEM}, built by ${_BUILTBY}" \
+    --with-bugurl="$_BUGURL" \
     --with-gnu-as \
     --with-gnu-ld \
     "${extra_config[@]}"
