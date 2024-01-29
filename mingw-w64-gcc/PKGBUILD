@@ -17,6 +17,7 @@ _BUGURL='https://github.com/stahta01/MINGW-mcfg-threads-PACKAGES/issues'
 _BUILTBY="stahta01"
 ### Language build options
 _enable_ada=yes
+_enable_d=yes
 _enable_objc=no
 _enable_rust=no
 _enable_jit=no
