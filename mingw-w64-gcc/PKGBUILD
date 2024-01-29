@@ -11,11 +11,17 @@
 # Contributor: wirx6
 # Contributor: Kirill Müller
 
+### Major build options
+_BUGURL='https://github.com/stahta01/MINGW-mcfg-threads-PACKAGES/issues'
+_BUILTBY="stahta01"
+### Language build options
 _enable_ada=yes
-_enable_objc=yes
+_enable_objc=no
 _enable_rust=no
-_enable_jit=yes
-_threads="posix"
+_enable_jit=no
+### build options not normally changed
+_threads="mcf"
+
 _realname=gcc
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}"
